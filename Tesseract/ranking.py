@@ -1,0 +1,36 @@
+def octet_rank(s):
+    k = 2**8
+    result = 0
+    for c in s:
+        result *= k
+        result += c + 1
+    return result
+
+
+def octet_unrank(i):
+    k = 2**8
+    result = []
+    while i != 0:
+        i, c = divmod(i - 1, k)
+        result.append(c)
+    return bytes(reversed(result))
+
+
+def str50_rank(s):
+    A = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ$%*0123456789'
+    k = len(A)
+    result = 0
+    for c in s:
+        result *= k
+        result += A.index(c) + 1
+    return result
+
+
+def str50_unrank(i):
+    A = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ$%*0123456789'
+    k = len(A)
+    result = []
+    while i != 0:
+        i, c = divmod(i - 1, k)
+        result.append(c)
+    return ''.join(A[c] for c in reversed(result))
