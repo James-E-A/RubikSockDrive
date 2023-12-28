@@ -1,7 +1,9 @@
 from .codec_v2 import *
 from .cube import Cube
+from .ranking import _A50
 
 from pathlib import Path
+import re
 import sys
 
 # TODO tkinter dialogue
@@ -12,7 +14,8 @@ def encode():
     x = input('Do you want to send a file, or a simple text message?\nType "50" and press Enter for simple text; or type "f" and press Enter for a file.\n> ')
     if x == '50':
       print('type your message\n(Only alphanumerics. Enter one paragraph per line, and a blank line when done.)')
-      x = '\x1E'.join(iter(lambda: input('> '), ''))
+      x = '\x1E'.join(iter(lambda: input('> '), '')).upper()
+      x = re.sub(rf'[^{re.escape(_A50)}]', lambda m: re.sub(r'....', lambda m: f'\x1bW{m[0]}', m[0].encode('utf-16le', errors='surrogateescape').hex().upper()), x)
       cs = str50_to_cubes(x)
     elif x == 'f':
       p = Path(input('specify the file path.\n> '))
@@ -36,7 +39,7 @@ def decode():
   cs = list(map(Cube, iter(lambda: input('> '), '')))
   x = input('Were you expecting a FILE, or a SIMPLE TEXT message?\nType "50" and press Enter for simple text; or type "f" and press Enter for a file.\n> ')
   if x == '50':
-    m = cubes_to_str50(cs).replace('\x1E', '\n\n')
+    m = cubes_to_str50(cs).replace('\x1E', '\n\n').replace('\x1B', '\u241B')
     print(f'Your message is:\n\n{m}\n')
   elif x == 'f':
     data = cubes_to_bytes(cs)

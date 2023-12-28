@@ -1,11 +1,9 @@
 from .ranking import *
-from .ranking import _A50
 from .cube import Cube
 from .multiset import Multiset
 
 from itertools import count
 from math import comb
-import re
 import sys
 
 __all__ = ['bytes_to_cubes', 'cubes_to_bytes', 'str50_to_cubes', 'cubes_to_str50']
@@ -24,7 +22,6 @@ def bytes_to_cubes(s, *, Cube=Cube):
 
 def str50_to_cubes(s, *, Cube=Cube):
     N = Cube.GROUP.order()
-    s = re.sub(rf'[^{re.escape(_A50)}]', lambda m: re.sub(r'....', lambda m: f'\x1bW{m[0]}', m[0].encode('utf-16le', errors='surrogateescape').hex().upper()), s.upper())
     x = str50_rank(s)
     cs = Multiset()
     for j in _nat_to_nbag(x, N):
