@@ -11,8 +11,9 @@ def encode():
   if arg1 is None:
     x = input('Do you want to send a file, or a simple text message?\nType "50" and press Enter for simple text; or type "f" and press Enter for a file.\n> ')
     if x == '50':
-      m = input('type your message\n(Only alphanumerics, spaces, and "$" to separate sentences.)\n> ')
-      cs = str50_to_cubes(m)
+      print('type your message\n(Only alphanumerics. Enter one paragraph per line, and a blank line when done.)')
+      x = '\x1E'.join(iter(lambda: input('> '), ''))
+      cs = str50_to_cubes(x)
     elif x == 'f':
       p = Path(input('specify the file path.\n> '))
       bytes_to_cubes(p.read_bytes())
@@ -30,16 +31,12 @@ def encode():
 
 
 def decode():
-  print('Enter, ONE PER LINE, the solverstrings for the cubes you recieved.\n(NOTE for now you MUST use white-up, green-front.)')
+  print('Enter, ONE PER LINE, the solverstrings for the cubes you recieved.\n(NOTE for now you MUST use white-up, green-front.)\n(Enter the cubes in any order.)')
   print('Press Enter without any result once you\'ve entered all the cubes.')
-  cs = []
-  x = input('> ')
-  while x:
-    cs.append(Cube(x))
-    x = input('> ')
+  cs = list(map(Cube, iter(lambda: input('> '), '')))
   x = input('Were you expecting a FILE, or a SIMPLE TEXT message?\nType "50" and press Enter for simple text; or type "f" and press Enter for a file.\n> ')
   if x == '50':
-    m = cubes_to_str50(cs).replace('$', '; ')
+    m = cubes_to_str50(cs).replace('\x1E', '\n\n')
     print(f'Your message is:\n\n{m}\n')
   elif x == 'f':
     data = cubes_to_bytes(cs)

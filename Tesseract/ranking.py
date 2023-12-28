@@ -16,8 +16,11 @@ def octet_unrank(i):
     return bytes(reversed(result))
 
 
+_A50 = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ\x1E\x1B\t0123456789'
+
+
 def str50_rank(s):
-    A = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ$%*0123456789'
+    A = _A50
     k = len(A)
     result = 0
     for c in s:
@@ -27,7 +30,7 @@ def str50_rank(s):
 
 
 def str50_unrank(i):
-    A = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ$%*0123456789'
+    A = _A50
     k = len(A)
     result = []
     while i != 0:
