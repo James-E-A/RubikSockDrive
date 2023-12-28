@@ -82,11 +82,11 @@ def _nat_to_kcomb(x, k):
         raise ValueError(f"can't represent {x} as a {k}-combination (k too small)")
 
     result = set()
-    for j in range(k, 0, -1):  # [k, k-1, ..., 1]
-        elem = _search_maxsatisfying(lambda n: not comb(n, j) > x)  # TODO performance
+    for i in reversed(range(k)):
+        elem = _search_maxsatisfying(lambda n: not comb(n, i+1) > x)  # TODO performance
         assert elem not in result
         result.add(elem)
-        x -= comb(elem, j)
+        x -= comb(elem, i+1)
     return result
 
 
