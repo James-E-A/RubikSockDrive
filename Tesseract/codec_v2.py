@@ -54,7 +54,7 @@ def _nat_to_nbag(x, n):
         bias += multicomb(n, k)
         k += 1
 
-    # 2. Derive combination
+    # 2. Natural -> Combination
     s = _nat_to_kcomb(x - bias, k)
 
     # 3. Combination -> Multiset
