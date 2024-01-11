@@ -1,6 +1,7 @@
 from .codec_v2 import *
 from .cube import Cube
 from .ranking import _A50
+from ._fix_windows_console import fixit
 
 from pathlib import Path
 import re
@@ -51,6 +52,7 @@ def decode():
 
 
 if __name__ == '__main__':
+  fixit()
   if input('Do you want to send a message, or recieve one?\nPress ENTER to recieve a message, or type ANYTHING AT ALL then press Enter to send one.\n> '):
     encode()
   else:
