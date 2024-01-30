@@ -1,4 +1,4 @@
-import sympy.combinatorics  # python -m pip install sympy
+import sympy.combinatorics  # python -m pip install "sympy >= 0.7.2"
 
 
 class Cube:
