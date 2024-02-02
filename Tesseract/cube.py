@@ -45,7 +45,7 @@ class Cube:
             '\n# '
             '\x1b[0m\x1b[8m\u2591\u2591\u2591\x1b[0m '  # (indent)
             '\x1b[38;5;{stickers[0]}m\x1b[48;5;{stickers[3]}m\u2580\x1b[38;5;{stickers[1]}m\x1b[48;5;{stickers[4]}m\u2580\x1b[38;5;{stickers[2]}m\x1b[48;5;{stickers[5]}m\u2580'  # U (top 2 rows)
-            '\x1b[0m'
+            '\x1b[0m \x1b[8m\u2591\x1b[0m'
             '\n# '
             '\x1b[8m\u2591\u2591\u2591\x1b[0m '  # (indent)
             '\x1b[38;5;{stickers[6]}m\u2580\x1b[38;5;{stickers[7]}m\u2580\x1b[38;5;{stickers[8]}m\u2580'  # U (bottom row)
@@ -58,7 +58,7 @@ class Cube:
             '\x1b[38;5;{stickers[12]}m\x1b[48;5;{stickers[24]}m\u2580\x1b[38;5;{stickers[13]}m\x1b[48;5;{stickers[25]}m\u2580\x1b[38;5;{stickers[14]}m\x1b[48;5;{stickers[26]}m\u2580'  # R (top 2 rows)
             '\x1b[0m '
             '\x1b[38;5;{stickers[15]}m\x1b[48;5;{stickers[27]}m\u2580\x1b[38;5;{stickers[16]}m\x1b[48;5;{stickers[28]}m\u2580\x1b[38;5;{stickers[17]}m\x1b[48;5;{stickers[29]}m\u2580'  # B (top 2 rows)
-            '\x1b[0m'
+            '\x1b[0m \x1b[8m\u2591\x1b[0m'
             '\n# '
             '\x1b[38;5;{stickers[42]}m\u2580\x1b[38;5;{stickers[43]}m\u2580\x1b[38;5;{stickers[44]}m\u2580'  # L (bottom row)
             '\x1b[0m '
@@ -71,7 +71,7 @@ class Cube:
             '\n# '
             '\x1b[8m\u2591\u2591\u2591\x1b[0m '  # (indent)
             '\x1b[38;5;{stickers[45]}m\x1b[48;5;{stickers[48]}m\u2580\x1b[38;5;{stickers[46]}m\x1b[48;5;{stickers[49]}m\u2580\x1b[38;5;{stickers[47]}m\x1b[48;5;{stickers[50]}m\u2580'  # D (top 2 rows)
-            '\x1b[0m'
+            '\x1b[0m \x1b[8m\u2591\x1b[0m'
             '\n# '
             '\x1b[8m\u2591\u2591\u2591\x1b[0m '  # (indent)
             '\x1b[38;5;{stickers[51]}m\u2580\x1b[38;5;{stickers[52]}m\u2580\x1b[38;5;{stickers[53]}m\u2580'  # D (bottom row)
