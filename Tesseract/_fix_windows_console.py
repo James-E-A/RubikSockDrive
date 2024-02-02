@@ -33,6 +33,9 @@ def fix_tty_encoding(f, **k):
         if cur_encoding.startswith('x-ebcdic'):
             try: f.reconfigure(encoding='cp037')
             except (io.UnsupportedOperation, LookupError): pass
+        elif cur_encoding == 'x-cp437':
+            try: f.reconfigure(encoding='cp437')
+            except (io.UnsupportedOperation, LookupError): pass
         warnings.warn(
             RuntimeWarning(*err.args).with_traceback(err.__traceback__), stacklevel=2)
 
