@@ -150,12 +150,12 @@ class Multiset:
             return NotImplemented
         raise NotImplementedError('Multiset.__gt__ TODO')
 
-    def __eq___(self, other):
+    def __eq__(self, other):
         if not isinstance(other, Multiset):
             return NotImplemented
         return self.__impl == other.__impl
 
-    def __ne___(self, other):
+    def __ne__(self, other):
         if not isinstance(other, Multiset):
             return NotImplemented
         return self.__impl != other.__impl
