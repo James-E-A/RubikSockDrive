@@ -155,7 +155,7 @@ class Multiset:
             return NotImplemented
         return self.__impl == other.__impl
 
-    def __eq___(self, other):
+    def __ne___(self, other):
         if not isinstance(other, Multiset):
             return NotImplemented
         return self.__impl != other.__impl
