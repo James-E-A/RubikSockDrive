@@ -1,3 +1,4 @@
 sortedcontainers
 sympy >= 0.7.2 , < 2
 colorama >= 0.4.6
+kociemba >= 1.2

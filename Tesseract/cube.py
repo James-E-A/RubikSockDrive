@@ -1,4 +1,5 @@
 import sympy.combinatorics  # python -m pip install "sympy >= 0.7.2"
+import kociemba as _kociemba  # python -m pip install "kociemba >= 1.2"
 
 
 class Cube:
@@ -37,6 +38,9 @@ class Cube:
     def __repr__(self):
         stickers = [self._COLORS[self._COLOR_INDICES[i]] for i in self.__impl]
         solverstring = ''.join(self._COLOR_LETTERS[self._COLOR_INDICES[i]] for i in self.__impl)
+        solution = [self.MOVES[m] for m in _kociemba.solve(self._alt_str('github.com/muodov/kociemba')).split()]
+        creation = [~m for m in reversed(solution)]
+        creation_str = ' '.join(_dindex(self.MOVES, m) for m in creation)
         #if inspect.stack()[1].filename != '<stdin>':
         #    # https://stackoverflow.com/questions/77719065
         #    return f'{self.__class__.__name__}({solverstring!r})'
@@ -76,8 +80,9 @@ class Cube:
             '\x1b[8m\u2591\u2591\u2591\x1b[0m '  # (indent)
             '\x1b[38;5;{stickers[51]}m\u2580\x1b[38;5;{stickers[52]}m\u2580\x1b[38;5;{stickers[53]}m\u2580'  # D (bottom row)
             '\x1b[0m'
+            f'\n# Create with: {creation_str}'
             '\n'
-        ).format(stickers=stickers, solverstring=solverstring)
+        ).format(stickers=stickers, solverstring=solverstring, creation_str=creation_str)
 
     MOVES = {
         'U': sympy.combinatorics.Permutation(53)( 0,  6,  8,  2)( 1,  3,  7,  5)( 9, 12, 15, 18)(10, 13, 16, 19)(11, 14, 17, 20),
@@ -143,6 +148,19 @@ class Cube:
     def _permutation(self):
         return self.__impl
 
+    def _alt_str(self, version):
+        if version == 'rubiks-cube-solver.com':
+            p_mod = sympy.combinatorics.Permutation(53)(9, 18)(10, 19)(11, 20)(12, 30, 24, 33, 36, 15, 42, 39, 27)(13, 31, 25, 34, 37, 16, 43, 40, 28)(14, 32, 26, 35, 38, 17, 44, 41, 29)
+            p = p_mod * self._permutation
+            color_letters = ('1', '3', '4', '5', '2', '6')
+            return f'https://rubiks-cube-solver.com/solution.php?cube=0{"".join(color_letters[self._COLOR_INDICES[i]] for i in p)}'
+        elif version == 'github.com/muodov/kociemba':
+            p_mod = sympy.combinatorics.Permutation(53)(9, 12, 24, 33, 51, 39, 30, 48, 27, 45, 15, 36, 18)(10, 13, 25, 34, 52, 40, 31, 49, 28, 46, 16, 37, 19)(11, 14, 26, 35, 53, 41, 32, 50, 29, 47, 17, 38, 20)
+            p = p_mod * self._permutation
+            color_letters = ('U', 'F', 'R', 'B', 'L', 'D')
+            return ''.join(color_letters[self._COLOR_INDICES[i]] for i in p)
+        raise ValueError(version)
+
     def __str__(self):
         return ''.join(self._COLOR_LETTERS[self._COLOR_INDICES[sticker_number]] for sticker_number in self.__impl)
 
@@ -165,3 +183,10 @@ class Cube:
         if not isinstance(other, Cube):
             return NotImplemented
         return (self.GROUP, self._permutation) == (other.GROUP, other._permutation)
+
+
+def _dindex(d, x):
+    try:
+        return next(k for k,v in d.items() if v == x)
+    except StopIteration:
+        raise ValueError(x)
