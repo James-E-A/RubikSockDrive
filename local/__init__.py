@@ -1,4 +1,4 @@
-from .multiset import Multiset
+from .multiset42 import Multiset
 from .cube import Cube
 from . import codec_v1
 from . import codec_v2

@@ -1,6 +1,6 @@
 from .ranking import *
 from .cube import Cube
-from .multiset import Multiset
+from .multiset42 import Multiset
 
 from itertools import count
 from math import comb
