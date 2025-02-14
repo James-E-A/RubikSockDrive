@@ -1,6 +1,8 @@
 import sympy.combinatorics  # python -m pip install "sympy >= 0.7.2"
 import kociemba as _kociemba  # python -m pip install "kociemba >= 1.2"
 
+import re
+
 
 class Cube:
     """Immutable class representing a Rubik's Cube.
@@ -30,6 +32,16 @@ class Cube:
         5, 5, 5,
     )
 
+    _ANSI_REPR_EXTRA = (
+        '# \x1b[0m\x1b[8m\u2591\u2591\u2591\x1b[0m \x1b[38;5;\ue500m\x1b[48;5;\ue503m\u2580\x1b[38;5;\ue501m\x1b[48;5;\ue504m\u2580\x1b[38;5;\ue502m\x1b[48;5;\ue505m\u2580\x1b[0m \x1b[8m\u2591\x1b[0m\n'
+        '# \x1b[8m\u2591\u2591\u2591\x1b[0m \x1b[38;5;\ue506m\u2580\x1b[38;5;\ue507m\u2580\x1b[38;5;\ue508m\u2580\x1b[0m\n'
+        '# \x1b[38;5;\ue512m\x1b[48;5;\ue51em\u2580\x1b[38;5;\ue513m\x1b[48;5;\ue51fm\u2580\x1b[38;5;\ue514m\x1b[48;5;\ue520m\u2580\x1b[0m \x1b[38;5;\ue509m\x1b[48;5;\ue515m\u2580\x1b[38;5;\ue50am\x1b[48;5;\ue516m\u2580\x1b[38;5;\ue50bm\x1b[48;5;\ue517m\u2580\x1b[0m \x1b[38;5;\ue50cm\x1b[48;5;\ue518m\u2580\x1b[38;5;\ue50dm\x1b[48;5;\ue519m\u2580\x1b[38;5;\ue50em\x1b[48;5;\ue51am\u2580\x1b[0m \x1b[38;5;\ue50fm\x1b[48;5;\ue51bm\u2580\x1b[38;5;\ue510m\x1b[48;5;\ue51cm\u2580\x1b[38;5;\ue511m\x1b[48;5;\ue51dm\u2580\x1b[0m \x1b[8m\u2591\x1b[0m\n'
+        '# \x1b[38;5;\ue52am\u2580\x1b[38;5;\ue52bm\u2580\x1b[38;5;\ue52cm\u2580\x1b[0m \x1b[38;5;\ue521m\u2580\x1b[38;5;\ue522m\u2580\x1b[38;5;\ue523m\u2580\x1b[0m \x1b[38;5;\ue524m\u2580\x1b[38;5;\ue525m\u2580\x1b[38;5;\ue526m\u2580\x1b[0m \x1b[38;5;\ue527m\u2580\x1b[38;5;\ue528m\u2580\x1b[38;5;\ue529m\u2580\x1b[0m\n'
+        '# \x1b[8m\u2591\u2591\u2591\x1b[0m \x1b[38;5;\ue52dm\x1b[48;5;\ue530m\u2580\x1b[38;5;\ue52em\x1b[48;5;\ue531m\u2580\x1b[38;5;\ue52fm\x1b[48;5;\ue532m\u2580\x1b[0m \x1b[8m\u2591\x1b[0m\n'
+        '# \x1b[8m\u2591\u2591\u2591\x1b[0m \x1b[38;5;\ue533m\u2580\x1b[38;5;\ue534m\u2580\x1b[38;5;\ue535m\u2580\x1b[0m'
+    )
+    _ANSI_REPR_EXTRA_RE5 = re.compile(r'[\uE500-\uE535]')
+
     def __hash__(self):
         if self._hash is None:
             self._hash = hash( (self._permutation, frozenset(frozenset(piece) for piece in self.POLYHEDRON_FACES), self.GROUP))
@@ -45,44 +57,10 @@ class Cube:
         #    # https://stackoverflow.com/questions/77719065
         #    return f'{self.__class__.__name__}({solverstring!r})'
         return (
-            f'{self.__class__.__name__}({solverstring!r})'  # (actual repr)
-            '\n# '
-            '\x1b[0m\x1b[8m\u2591\u2591\u2591\x1b[0m '  # (indent)
-            '\x1b[38;5;{stickers[0]}m\x1b[48;5;{stickers[3]}m\u2580\x1b[38;5;{stickers[1]}m\x1b[48;5;{stickers[4]}m\u2580\x1b[38;5;{stickers[2]}m\x1b[48;5;{stickers[5]}m\u2580'  # U (top 2 rows)
-            '\x1b[0m \x1b[8m\u2591\x1b[0m'
-            '\n# '
-            '\x1b[8m\u2591\u2591\u2591\x1b[0m '  # (indent)
-            '\x1b[38;5;{stickers[6]}m\u2580\x1b[38;5;{stickers[7]}m\u2580\x1b[38;5;{stickers[8]}m\u2580'  # U (bottom row)
-            '\x1b[0m'
-            '\n# '
-            '\x1b[38;5;{stickers[18]}m\x1b[48;5;{stickers[30]}m\u2580\x1b[38;5;{stickers[19]}m\x1b[48;5;{stickers[31]}m\u2580\x1b[38;5;{stickers[20]}m\x1b[48;5;{stickers[32]}m\u2580'  # L (top 2 rows)
-            '\x1b[0m '
-            '\x1b[38;5;{stickers[9]}m\x1b[48;5;{stickers[21]}m\u2580\x1b[38;5;{stickers[10]}m\x1b[48;5;{stickers[22]}m\u2580\x1b[38;5;{stickers[11]}m\x1b[48;5;{stickers[23]}m\u2580'  # F (top 2 rows)
-            '\x1b[0m '
-            '\x1b[38;5;{stickers[12]}m\x1b[48;5;{stickers[24]}m\u2580\x1b[38;5;{stickers[13]}m\x1b[48;5;{stickers[25]}m\u2580\x1b[38;5;{stickers[14]}m\x1b[48;5;{stickers[26]}m\u2580'  # R (top 2 rows)
-            '\x1b[0m '
-            '\x1b[38;5;{stickers[15]}m\x1b[48;5;{stickers[27]}m\u2580\x1b[38;5;{stickers[16]}m\x1b[48;5;{stickers[28]}m\u2580\x1b[38;5;{stickers[17]}m\x1b[48;5;{stickers[29]}m\u2580'  # B (top 2 rows)
-            '\x1b[0m \x1b[8m\u2591\x1b[0m'
-            '\n# '
-            '\x1b[38;5;{stickers[42]}m\u2580\x1b[38;5;{stickers[43]}m\u2580\x1b[38;5;{stickers[44]}m\u2580'  # L (bottom row)
-            '\x1b[0m '
-            '\x1b[38;5;{stickers[33]}m\u2580\x1b[38;5;{stickers[34]}m\u2580\x1b[38;5;{stickers[35]}m\u2580'  # F (bottom row)
-            '\x1b[0m '
-            '\x1b[38;5;{stickers[36]}m\u2580\x1b[38;5;{stickers[37]}m\u2580\x1b[38;5;{stickers[38]}m\u2580'  # R (bottom row)
-            '\x1b[0m '
-            '\x1b[38;5;{stickers[39]}m\u2580\x1b[38;5;{stickers[40]}m\u2580\x1b[38;5;{stickers[41]}m\u2580'  # B (bottom row)
-            '\x1b[0m'
-            '\n# '
-            '\x1b[8m\u2591\u2591\u2591\x1b[0m '  # (indent)
-            '\x1b[38;5;{stickers[45]}m\x1b[48;5;{stickers[48]}m\u2580\x1b[38;5;{stickers[46]}m\x1b[48;5;{stickers[49]}m\u2580\x1b[38;5;{stickers[47]}m\x1b[48;5;{stickers[50]}m\u2580'  # D (top 2 rows)
-            '\x1b[0m \x1b[8m\u2591\x1b[0m'
-            '\n# '
-            '\x1b[8m\u2591\u2591\u2591\x1b[0m '  # (indent)
-            '\x1b[38;5;{stickers[51]}m\u2580\x1b[38;5;{stickers[52]}m\u2580\x1b[38;5;{stickers[53]}m\u2580'  # D (bottom row)
-            '\x1b[0m'
-            f'\n# Create with: {creation_str}'
-            '\n'
-        ).format(stickers=stickers, solverstring=solverstring, creation_str=creation_str)
+            f"{self.__class__.__name__}({solverstring!r})\n"
+            f"{re.sub(self._ANSI_REPR_EXTRA_RE5, lambda m: str(stickers[ord(m.group(0)) - 0xE500]), self._ANSI_REPR_EXTRA)}\n"
+            f"# {creation_str}\n"
+        )
 
     MOVES = {
         'U': sympy.combinatorics.Permutation(53)( 0,  6,  8,  2)( 1,  3,  7,  5)( 9, 12, 15, 18)(10, 13, 16, 19)(11, 14, 17, 20),
