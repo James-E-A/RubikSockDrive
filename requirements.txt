@@ -1,3 +1,7 @@
-sympy >= 0.7.2 , < 2
-colorama >= 0.4.6
-kociemba >= 1.2
+sympy >= 0.7.2, < 2
+
+kociemba >= 1.2 ; platform_python_implementation == 'CPython'
+kociemba @ git+https://github.com/muodov/kociemba.git@refs/pull/54/merge ; platform_python_implementation != 'CPython'
+
+colorama >= 0.4.6 ; sys_platform == 'win32' and platform_python_implementation == 'CPython'
+colorama @ git+https://github.com/tartley/colorama.git@refs/pull/401/merge ; sys_platform == 'win32' and platform_python_implementation != 'CPython'
