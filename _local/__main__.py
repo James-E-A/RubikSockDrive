@@ -9,54 +9,46 @@ except ImportError:
 from pathlib import Path
 import re
 import sys
+import textwrap
 
 # TODO tkinter dialogue
 
-def encode():
-  arg1 = sys.argv[1] if len(sys.argv) > 1 else None
-  if arg1 is None:
-    x = input('Do you want to send a file, or a simple text message?\nType "50" and press Enter for simple text; or type "f" and press Enter for a file.\n> ')
-    if x == '50':
-      print('type your message\n(Only alphanumerics. Enter one paragraph per line, and a blank line when done.)')
-      x = '\x1E'.join(iter(lambda: input('> '), '')).upper()
-      x = re.sub(rf'[^{re.escape(_A50)}]', lambda m: re.sub(r'....', lambda m: f'\x1bW{m[0]}', m[0].encode('utf-16le', errors='surrogateescape').hex().upper()), x)
-      cs = str50_to_cubes(x)
-    elif x == 'f':
-      p = Path(input('specify the file path.\n> '))
-      bytes_to_cubes(p.read_bytes())
-    else:
-      raise ValueError()
-  else:
-    p = Path(arg1)
-    print(f'Sending file from {p}...')
-    if p.suffix in {'.txt', '.TXT'}:
-      cs = str50_to_cubes(p.read_text())
-    else:
-      cs = bytes_to_cubes(p.read_bytes())
-  print('Here are the cubes containing your outbound message:')
-  print('\n'.join(repr(c) for c in cs))
-
-
-def decode():
-  print('Enter, ONE PER LINE, the solverstrings for the cubes you recieved.\n(NOTE for now you MUST use white-up, green-front.)\n(Enter the cubes in any order.)')
-  print('Press Enter without any result once you\'ve entered all the cubes.')
-  cs = list(map(Cube, iter(lambda: input('> '), '')))
-  x = input('Were you expecting a FILE, or a SIMPLE TEXT message?\nType "50" and press Enter for simple text; or type "f" and press Enter for a file.\n> ')
-  if x == '50':
-    m = cubes_to_str50(cs).replace('\x1E', '\n\n').replace('\x1B', '\u241B')
-    print(f'Your message is:\n\n{m}\n')
-  elif x == 'f':
-    data = cubes_to_bytes(cs)
-    x = input('Enter the path to save the file to\n(WARNING: will be overridden if it exists!)\n> ')
-    p = Path(x)
-    p.write_bytes(data)
-  else:
-    raise ValueError()
-
-
 if __name__ == '__main__':
   just_fix_windows_console()
-  if input('Do you want to send a message, or recieve one?\nPress ENTER to recieve a message, or type ANYTHING AT ALL then press Enter to send one.\n> '):
-    encode()
+
+  mode = input("What do you want to do?\nF: Send a file\n50: Send a simple text message\nEnter: receive a message\n> ").upper()
+
+  if mode in {"F", "50"}:
+    if mode == "F":
+      cs = bytes_to_cubes(Path.open(input("Filename:\n> ")).read_bytes())
+
+    elif mode == "50":
+      print("Type your message now. End with a blank line.")
+      message = '\ue01d$'.join(iter(lambda: input('> '), ''))
+      message = message.upper()
+      message = re.sub(rf'[^{re.escape(_A50)}]', lambda m: f"\ue01dW{m.group(0).encode('utf-16le', errors='surrogateescape').hex().upper()}", message)
+      cs = str50_to_cubes(message)
+
+    print("\n".join(repr(cube) for cube in cs))
+
+  elif mode == "":
+    print("Enter the solverstrings for the cubes you've received, one per line, in any order.")
+    print("NOTE: for now, you must enter them white-up, green-front.")
+    print("Example: wwwwwwwwwgggrrrbbbooogggrrrbbbooogggrrrbbboooyyyyyyyyy")
+    cs = list(map(Cube, iter(lambda: input('> '), '')))
+
+    mode = input("Were you expecting a File (F), or a simple text message (50)?\n> ").upper()
+    if mode == "F":
+      Path(input("Filename (WILL BE OVERWRITTEN):\n> ")).write_bytes(cubes_to_bytes(cs))
+
+    if mode == "50":
+      message = cubes_to_str50(cs)
+      message = message.replace('\ue01d$', '\n\n')
+      message = re.sub(r'\ue01dW([0-9A-F]{4})', lambda m: bytes.fromhex(m.group(1)).decode('utf-16le', errors='surrogateescape'), message)
+      print('\n'.join(["-----BEGIN MESSAGE-----", *textwrap.wrap(message), "-----END MESSAGE-----"]))
+
+    else:
+      raise ValueError
+
   else:
-    decode()
+    raise ValueError

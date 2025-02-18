@@ -16,7 +16,7 @@ def octet_unrank(i):
     return bytes(reversed(result))
 
 
-_A50 = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ\x1E\x1B\t0123456789'
+_A50 = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ$.\ue01d0123456789'
 
 
 def str50_rank(s):
