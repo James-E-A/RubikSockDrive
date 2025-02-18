@@ -9,38 +9,38 @@ import sys
 __all__ = ['bytes_to_cubes', 'cubes_to_bytes', 'str50_to_cubes', 'cubes_to_str50']
 
 
-def bytes_to_cubes(s, *, Cube=Cube):
-    N = Cube.GROUP.order()  # 43_252_003_274_489_856_000
+def bytes_to_cubes(s, *, t=Cube):
+    N = t.GROUP.order()  # 43_252_003_274_489_856_000
     x = octet_rank(s)
     cs = Multiset()
     for j in _nat_to_nbag(x, N):
-        p = Cube.GROUP.coset_unrank(j)
-        c = Cube(p)
-        cs.add(c)
+        cs.add(t(t.GROUP.coset_unrank(j)))
     return cs
 
 
-def str50_to_cubes(s, *, Cube=Cube):
-    N = Cube.GROUP.order()
+def str50_to_cubes(s, *, t=Cube):
+    N = t.GROUP.order()
     x = str50_rank(s)
     cs = Multiset()
     for j in _nat_to_nbag(x, N):
-        p = Cube.GROUP.coset_unrank(j)
-        c = Cube(p)
-        cs.add(c)
+        cs.add(t(t.GROUP.coset_unrank(j)))
     return cs
 
 
-def cubes_to_bytes(cs, *, Cube=Cube):
-    N = Cube.GROUP.order()  # 43_252_003_274_489_856_000
-    js = ( Cube.GROUP.coset_rank(c._permutation) for c in cs )
+def cubes_to_bytes(cs):
+    if not cs: return b""
+    t, = set(c.__class__ for c in cs)
+    N = t.GROUP.order()  # 43_252_003_274_489_856_000
+    js = ( t.GROUP.coset_rank(c._permutation) for c in cs )
     x = _nbag_to_nat(js, N)
     return octet_unrank(x)
 
 
-def cubes_to_str50(cs, *, Cube=Cube):
-    N = Cube.GROUP.order()  # 43_252_003_274_489_856_000
-    js = ( Cube.GROUP.coset_rank(c._permutation) for c in cs )
+def cubes_to_str50(cs):
+    if not cs: return ""
+    t, = set(c.__class__ for c in cs)
+    N = t.GROUP.order()  # 43_252_003_274_489_856_000
+    js = ( t.GROUP.coset_rank(c._permutation) for c in cs )
     x = _nbag_to_nat(js, N)
     return str50_unrank(x)
 
