@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
   if mode in {"F", "50"}:
     if mode == "F":
-      cs = bytes_to_cubes(Path.open(input("Filename:\n> ")).read_bytes())
+      cs = bytes_to_cubes(Path(input("Filename:\n> ")).read_bytes())
 
     elif mode == "50":
       print("Type your message now. End with a blank line.")
