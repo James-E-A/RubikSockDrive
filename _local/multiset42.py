@@ -2,16 +2,12 @@
 
 """
 
-__all__ = ['Multiset', 'FrozenMultiset']
+__all__ = ['Bag', 'FrozenBag']
 
 import collections
 from collections.abc import Collection, Iterable, KeysView, Mapping, MutableSet, Set
-from functools import total_ordering
 from itertools import chain, repeat, starmap
-import logging
 from math import isqrt
-from operator import setitem
-import warnings
 
 
 class _MultisetBase:
@@ -71,7 +67,7 @@ class _MultisetBase:
     # Set-like methods
 
     def copy(self):
-        return Bag.fromcounts(self.multiplicities())
+        return self.__class__.fromcounts(self.multiplicities())
 
     def __contains__(self, elem):
         return elem in self.__impl.keys()
@@ -98,7 +94,7 @@ class _MultisetBase:
     # unique Multiset methods
 
     def support(self):
-        return _MultisetSupportView(self.__impl)
+        return _BagSupportSetView(self.__impl)
 
     def multiplicities(self):
         return self.__impl.items()
@@ -161,8 +157,27 @@ class _MultisetBase:
             new_count = self_impl_get(elem, 0) - count
             if new_count > 0:
                 self_impl[elem] = new_count
-            elif strict and new_count < 0:
-                raise KeyError
+            elif new_count == 0:
+                del self_impl[elem]
+            else:
+                if strict:
+                    raise KeyError
+
+    def _alter_update(self, counts):
+        self_impl = self.__impl
+        self_impl_get = self_impl.get
+        for elem, count in counts:
+            cur_count = self_impl_get(elem)
+            if cur_count is None:
+                assert count > 0, "_alter_update expects sound changeset"
+                self_impl[elem] = count
+            else:
+                new_count = count + cur_count
+                assert new_count >= 0, "_alter_update expects sound changeset"
+                if new_count > 0:
+                    self_impl[elem] = new_count
+                else:
+                    del self_impl[elem]
 
     # operator methods
 
@@ -196,6 +211,12 @@ class _MultisetBase:
 
         return self.symmetric_difference(other)
 
+    def __mul__(self, scalar):
+        if not isinstance(scalar, int):
+            return NotImplemented
+
+        return self.__class__.fromcounts((elem, count*scalar) for elem, count in self.multiplicities())
+
     def __le__(self, other):
         if not isinstance(other, _MultisetBase):
             return NotImplemented
@@ -222,6 +243,9 @@ class Bag(_MultisetBase, MutableSet):
     """Bag is a finite, unordered container with multiplicitous elements.
     """
 
+    def extend(self, collection):
+        self._extend(collection)
+
     def add(self, elem, *, _count=1):
         self._add(elem, _count)
 
@@ -242,6 +266,27 @@ class Bag(_MultisetBase, MutableSet):
     def discard(self, elem):
         self._discard(elem)
 
+    def __iadd__(self, other):
+        if not isinstance(other, _MultisetBase):
+            return NotImplemented
+
+        self._extend(other)
+        return self
+
+    def __isub__(self, other):
+        if not isinstance(other, _MultisetBase):
+            return NotImplemented
+
+        self._remove_update(other.multiplicities())
+        return self
+
+    def __ixor__(self, other):
+        if not isinstance(other, _MultisetBase):
+            return NotImplemented
+
+    changeset = [(elem, diff) for elem, count in other.multiplicities() if ]
+    self._alter_update(changeset)
+    return self
 
 class FrozenBag(_MultisetBase, Set):
     """FrozenBag is a finite, unordered, immutable container with multiplicitous elements.
@@ -256,7 +301,7 @@ class FrozenBag(_MultisetBase, Set):
         return result
 
 
-class _MultisetSupportView(KeysView):
+class _BagSupportSetView(KeysView):
     __slots__ = ()
     # https://github.com/python/cpython/blob/v3.13.2/Objects/dictobject.c#L4452
     # https://github.com/python/cpython/blob/v3.13.2/Lib/_collections_abc.py#L862
