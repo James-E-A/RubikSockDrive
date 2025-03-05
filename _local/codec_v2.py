@@ -1,6 +1,6 @@
 from .ranking import *
 from .cube import Cube
-from .multiset42 import Multiset
+from .multiset42 import Bag
 
 from itertools import count
 from math import comb
@@ -12,7 +12,7 @@ __all__ = ['bytes_to_cubes', 'cubes_to_bytes', 'str50_to_cubes', 'cubes_to_str50
 def bytes_to_cubes(s, *, t=Cube):
     N = t.GROUP.order()  # 43_252_003_274_489_856_000
     x = octet_rank(s)
-    cs = Multiset()
+    cs = Bag()
     for j in _nat_to_nbag(x, N):
         cs.add(t(t.GROUP.coset_unrank(j)))
     return cs
@@ -21,7 +21,7 @@ def bytes_to_cubes(s, *, t=Cube):
 def str50_to_cubes(s, *, t=Cube):
     N = t.GROUP.order()
     x = str50_rank(s)
-    cs = Multiset()
+    cs = Bag()
     for j in _nat_to_nbag(x, N):
         cs.add(t(t.GROUP.coset_unrank(j)))
     return cs
@@ -46,7 +46,7 @@ def cubes_to_str50(cs):
 
 
 def _nat_to_nbag(x, n):
-    if x == 0: return Multiset()
+    if x == 0: return Bag()
     # 1. Calculate k
     bias = 1
     k = 1
@@ -58,7 +58,7 @@ def _nat_to_nbag(x, n):
     s = _nat_to_kcomb(x - bias, k)
 
     # 3. Combination -> Multiset
-    return Multiset( (elem - i) for (i, elem) in enumerate(sorted(s)) )
+    return Bag( (elem - i) for (i, elem) in enumerate(sorted(s)) )
 
 
 def _nbag_to_nat(ms, n):

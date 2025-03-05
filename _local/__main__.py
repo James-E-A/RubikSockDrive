@@ -1,6 +1,8 @@
 from .codec_v2 import *
 from .cube import Cube
 from .ranking import _A50
+from .util import callbackify
+
 try:
   from colorama import just_fix_windows_console
 except ImportError:
@@ -43,9 +45,12 @@ if __name__ == '__main__':
 
     if mode == "50":
       message = cubes_to_str50(cs)
-      message = message.replace('\ue01d$', '\n\n')
       message = re.sub(r'\ue01dW([0-9A-F]{4})', lambda m: bytes.fromhex(m.group(1)).decode('utf-16le', errors='surrogateescape'), message)
-      print('\n'.join(["-----BEGIN MESSAGE-----", *textwrap.wrap(message), "-----END MESSAGE-----"]))
+      print('\n'.join([
+        "-----BEGIN MESSAGE-----",
+        *(line for paragraph in message.split('\ue01d$')for line in textwrap.wrap(paragraph)),
+        "-----END MESSAGE-----"
+      ]))
 
     else:
       raise ValueError
