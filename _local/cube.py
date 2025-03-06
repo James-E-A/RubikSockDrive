@@ -16,7 +16,7 @@ class Cube:
         p = cls.GROUP.random()
         return cls(p)
 
-    _COLORS = (15, 10, 1, 4, 3, 11)  # Override this to re-color a subclass!
+    _COLORS = (15, 10, 9, 4, 3, 11)  # Override this to re-color a subclass! JP -> (15, 10, 4, 11, 3, 4)
     _COLOR_LETTERS = ('w', 'g', 'r', 'b', 'o', 'y')
     _COLOR_INDICES = (
         0, 0, 0,
@@ -49,15 +49,11 @@ class Cube:
 
     def __repr__(self):
         stickers = [self._COLORS[self._COLOR_INDICES[i]] for i in self.__impl]
-        solverstring = ''.join(self._COLOR_LETTERS[self._COLOR_INDICES[i]] for i in self.__impl)
         solution = [self.MOVES[m] for m in _kociemba.solve(self._alt_str('github.com/muodov/kociemba')).split()]
-        creation = [~m for m in reversed(solution)]
-        creation_str = ' '.join(_dindex(self.MOVES, m) for m in creation)
-        #if inspect.stack()[1].filename != '<stdin>':
-        #    # https://stackoverflow.com/questions/77719065
-        #    return f'{self.__class__.__name__}({solverstring!r})'
+        creation_str = ' '.join(_dindex(self.MOVES, ~m) for m in reversed(solution))
+
         return (
-            f"{self.__class__.__name__}({solverstring!r})\n"
+            f"{self.__class__.__name__}({str(self)!r})\n"
             f"{re.sub(self._ANSI_REPR_EXTRA_RE5, lambda m: str(stickers[ord(m.group(0)) - 0xE500]), self._ANSI_REPR_EXTRA)}\n"
             f"# {creation_str}\n"
         )

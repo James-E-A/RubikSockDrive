@@ -85,6 +85,7 @@ def _nat_to_kcomb(x, k):
         assert elem not in result
         result.add(elem)
         x -= comb(elem, i+1)
+
     return result
 
 
