@@ -284,9 +284,6 @@ class Bag(_MultisetBase, MutableSet):
         if not isinstance(other, _MultisetBase):
             return NotImplemented
 
-    changeset = [(elem, diff) for elem, count in other.multiplicities() if ]
-    self._alter_update(changeset)
-    return self
 
 class FrozenBag(_MultisetBase, Set):
     """FrozenBag is a finite, unordered, immutable container with multiplicitous elements.
