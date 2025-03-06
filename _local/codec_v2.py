@@ -47,7 +47,7 @@ def cubes_to_str50(cs):
 
 def _nat_to_nbag(x, n):
     if x == 0: return Bag()
-    # 1. Calculate k
+    # 1. Calculate epoch (k) and offset (bias)
     bias = 1
     k = 1
     while not (x - bias) in range(multicomb(n, k)):
@@ -65,7 +65,7 @@ def _nbag_to_nat(ms, n):
     # 1. Multiset -> Combination
     s = set( (x + i) for (i, x) in enumerate(sorted(ms)) )
 
-    # 2. Calculate bias
+    # 2. Calculate offset
     bias = sum(multicomb(n, k) for k in range(len(s)))
 
     # 3. Combination -> Natural
