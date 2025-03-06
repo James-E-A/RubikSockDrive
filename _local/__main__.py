@@ -43,7 +43,7 @@ if __name__ == '__main__':
     if mode == "F":
       Path(input("Filename (WILL BE OVERWRITTEN):\n> ")).write_bytes(cubes_to_bytes(cs))
 
-    if mode == "50":
+    elif mode == "50":
       message = cubes_to_str50(cs)
       message = re.sub(r'\ue01dW([0-9A-F]{4})', lambda m: bytes.fromhex(m.group(1)).decode('utf-16le', errors='surrogateescape'), message)
       print('\n'.join([
