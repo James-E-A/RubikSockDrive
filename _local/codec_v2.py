@@ -9,7 +9,7 @@ import sys
 __all__ = ['bytes_to_cubes', 'cubes_to_bytes', 'str50_to_cubes', 'cubes_to_str50']
 
 
-def bytes_to_cubes(s, *, t=Cube):
+def bytes_to_cubes(s: bytes, *, t=Cube) -> 'Collection[Cube]':
     N = t.GROUP.order()  # 43_252_003_274_489_856_000
     x = octet_rank(s)
     cs = Bag()
@@ -18,7 +18,7 @@ def bytes_to_cubes(s, *, t=Cube):
     return cs
 
 
-def str50_to_cubes(s, *, t=Cube):
+def str50_to_cubes(s: str, *, t=Cube) -> 'Collection[Cube]':
     N = t.GROUP.order()
     x = str50_rank(s)
     cs = Bag()
@@ -27,7 +27,7 @@ def str50_to_cubes(s, *, t=Cube):
     return cs
 
 
-def cubes_to_bytes(cs):
+def cubes_to_bytes(cs: 'Collection[Cube]') -> bytes:
     if not cs: return b""
     t, = set(c.__class__ for c in cs)
     N = t.GROUP.order()  # 43_252_003_274_489_856_000
@@ -36,7 +36,7 @@ def cubes_to_bytes(cs):
     return octet_unrank(x)
 
 
-def cubes_to_str50(cs):
+def cubes_to_str50(cs: 'Collection[Cube]') -> str:
     if not cs: return ""
     t, = set(c.__class__ for c in cs)
     N = t.GROUP.order()  # 43_252_003_274_489_856_000
@@ -45,7 +45,9 @@ def cubes_to_str50(cs):
     return str50_unrank(x)
 
 
-def _nat_to_nbag(x, n):
+# Python typing is too limited for this function
+#   _nat_to_nbag(x: Natural, n: Natural) -> Collection[Annotated[Natural, lambda i: i < n]]
+def _nat_to_nbag(x: int, n: int) -> 'Collection[int]':
     if x == 0: return Bag()
     # 1. Calculate epoch (k) and offset (bias)
     bias = 1
@@ -61,7 +63,9 @@ def _nat_to_nbag(x, n):
     return Bag( (elem - i) for (i, elem) in enumerate(sorted(s)) )
 
 
-def _nbag_to_nat(ms, n):
+# Python typing is too limited for this function
+#   _nbag_to_nat(ms: Collection[Annotated[Natural, lambda i: i < n]], n: Natural) -> Natural
+def _nbag_to_nat(ms: 'Collection[int]', n: int) -> int:
     # 1. Multiset -> Combination
     s = set( (x + i) for (i, x) in enumerate(sorted(ms)) )
 
@@ -72,7 +76,9 @@ def _nbag_to_nat(ms, n):
     return _kcomb_to_nat(s) + bias
 
 
-def _nat_to_kcomb(x, k):
+# Python typing is too limited for this function
+#   _nat_to_kcomb(x: Natural, k: Natural) -> Annotated[Set[Natural], lambda s: len(s) == k]
+def _nat_to_kcomb(x: int, k: int) -> 'Set[int]':
     """https://en.wikipedia.org/wiki/Combinatorial_number_system#Finding_the_k-combination_for_a_given_number
     """
     x = int(x)
@@ -89,7 +95,8 @@ def _nat_to_kcomb(x, k):
     return result
 
 
-def _kcomb_to_nat(s):
+#   _kcomb_to_nat(s: Set[Natural]) -> Natural
+def _kcomb_to_nat(s: 'Set[int]') -> int:
     """https://en.wikipedia.org/wiki/Combinatorial_number_system#Place_of_a_combination_in_the_ordering
 
     Inverse of ``_nat_to_kcomb``.
@@ -97,13 +104,14 @@ def _kcomb_to_nat(s):
     return sum(comb(elem, i+1) for i, elem in enumerate(sorted(s)))
 
 
-def multicomb(n, k):
+#   multicomb(n: Natural, k: Natural) -> Natural
+def multicomb(n: int, k: int) -> int:
     """https://en.wikipedia.org/wiki/Multiset_coefficient
     """
     return comb((n + k - 1), k)
 
 
-def _search_maxsatisfying(predicate, *, start=0, _increasefunc=lambda n, base=sys.maxsize+1: n*base):
+def _search_maxsatisfying(predicate, *, start=0, _increasefunc=lambda n, _base=sys.maxsize+1: n*_base):
     """Return the largest integer *n* for which predicate(n) succeeds
 
     predicate must have a nowhere-positive derivative.
