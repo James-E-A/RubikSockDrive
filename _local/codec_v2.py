@@ -10,6 +10,7 @@ __all__ = ['bytes_to_cubes', 'cubes_to_bytes', 'str50_to_cubes', 'cubes_to_str50
 
 
 def bytes_to_cubes(s: bytes, *, t=Cube) -> 'Collection[Cube]':
+    "Biject an octet string to a bag of Cubes."
     N = t.GROUP.order()  # 43_252_003_274_489_856_000
     x = octet_rank(s)
     cs = Bag()
@@ -19,6 +20,7 @@ def bytes_to_cubes(s: bytes, *, t=Cube) -> 'Collection[Cube]':
 
 
 def str50_to_cubes(s: str, *, t=Cube) -> 'Collection[Cube]':
+    "Biject a string to a bag of Cubes. Extremely limited character support."
     N = t.GROUP.order()
     x = str50_rank(s)
     cs = Bag()
@@ -28,6 +30,7 @@ def str50_to_cubes(s: str, *, t=Cube) -> 'Collection[Cube]':
 
 
 def cubes_to_bytes(cs: 'Collection[Cube]') -> bytes:
+    "Inverse of `bytes_to_cubes`."
     if not cs: return b""
     t, = set(c.__class__ for c in cs)
     N = t.GROUP.order()  # 43_252_003_274_489_856_000
@@ -37,6 +40,7 @@ def cubes_to_bytes(cs: 'Collection[Cube]') -> bytes:
 
 
 def cubes_to_str50(cs: 'Collection[Cube]') -> str:
+    "Inverse of `cubes_to_str50`."
     if not cs: return ""
     t, = set(c.__class__ for c in cs)
     N = t.GROUP.order()  # 43_252_003_274_489_856_000
@@ -45,9 +49,13 @@ def cubes_to_str50(cs: 'Collection[Cube]') -> str:
     return str50_unrank(x)
 
 
-# Python typing is too limited for this function
-#   _nat_to_nbag(x: Natural, n: Natural) -> Collection[Annotated[Natural, lambda i: i < n]]
-def _nat_to_nbag(x: int, n: int) -> 'Collection[int]':
+#typing: Natural = Annotated[int, lambda _: (0 <= _)]
+#typing: NaturalLessThan[n] = Annotated[int, lambda _: (0 <= _ < n)]
+#typing: FixedSizeSet[T, k] = Annotated[Set[T], lambda _: (len(_) == k)]
+
+
+def _nat_to_nbag(x: 'Natural', n: 'Natural') -> 'Collection[NaturalLessThan[n]]':
+    "Biject *x* from the natural numbers, to the set of all multisets of natural numbers which are less than *n*."
     if x == 0: return Bag()
     # 1. Calculate epoch (k) and offset (bias)
     bias = 1
@@ -63,9 +71,8 @@ def _nat_to_nbag(x: int, n: int) -> 'Collection[int]':
     return Bag( (elem - i) for (i, elem) in enumerate(sorted(s)) )
 
 
-# Python typing is too limited for this function
-#   _nbag_to_nat(ms: Collection[Annotated[Natural, lambda i: i < n]], n: Natural) -> Natural
-def _nbag_to_nat(ms: 'Collection[int]', n: int) -> int:
+def _nbag_to_nat(ms: 'Collection[NaturalLessThan[n]]', n: 'Natural') -> 'Natural':
+    "Inverse of `_nat_to_nbag`."
     # 1. Multiset -> Combination
     s = set( (x + i) for (i, x) in enumerate(sorted(ms)) )
 
@@ -76,9 +83,7 @@ def _nbag_to_nat(ms: 'Collection[int]', n: int) -> int:
     return _kcomb_to_nat(s) + bias
 
 
-# Python typing is too limited for this function
-#   _nat_to_kcomb(x: Natural, k: Natural) -> Annotated[Set[Natural], lambda s: len(s) == k]
-def _nat_to_kcomb(x: int, k: int) -> 'Set[int]':
+def _nat_to_kcomb(x: 'Natural', k: 'Natural') -> 'FixedSizeSet[Natural, k]':
     """https://en.wikipedia.org/wiki/Combinatorial_number_system#Finding_the_k-combination_for_a_given_number
     """
     x = int(x)
@@ -95,8 +100,7 @@ def _nat_to_kcomb(x: int, k: int) -> 'Set[int]':
     return result
 
 
-#   _kcomb_to_nat(s: Set[Natural]) -> Natural
-def _kcomb_to_nat(s: 'Set[int]') -> int:
+def _kcomb_to_nat(s: 'Set[Natural]') -> 'Natural':
     """https://en.wikipedia.org/wiki/Combinatorial_number_system#Place_of_a_combination_in_the_ordering
 
     Inverse of ``_nat_to_kcomb``.
@@ -104,14 +108,13 @@ def _kcomb_to_nat(s: 'Set[int]') -> int:
     return sum(comb(elem, i+1) for i, elem in enumerate(sorted(s)))
 
 
-#   multicomb(n: Natural, k: Natural) -> Natural
-def multicomb(n: int, k: int) -> int:
+def multicomb(n: 'Natural', k: 'Natural') -> 'Natural':
     """https://en.wikipedia.org/wiki/Multiset_coefficient
     """
     return comb((n + k - 1), k)
 
 
-def _search_maxsatisfying(predicate, *, start=0, _increasefunc=lambda n, _base=sys.maxsize+1: n*_base):
+def _search_maxsatisfying(predicate: 'Callable[[T], bool]', *, start: int=0, _increasefunc: 'Callable[[int], int]'=lambda n, _base=sys.maxsize+1: n*_base):
     """Return the largest integer *n* for which predicate(n) succeeds
 
     predicate must have a nowhere-positive derivative.
