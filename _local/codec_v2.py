@@ -87,7 +87,7 @@ def _nat_to_kcomb(x: 'Natural', k: 'Natural') -> 'FixedSizeSet[Natural, k]':
     """https://en.wikipedia.org/wiki/Combinatorial_number_system#Finding_the_k-combination_for_a_given_number
     """
     x = int(x)
-    if k < 1 and x > 0:
+    if (x > 0) and not (k > 0):
         raise ValueError(f"can't represent {x} as a {k}-combination (k too small)")
 
     result = set()
