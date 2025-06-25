@@ -49,9 +49,9 @@ def cubes_to_str50(cs: 'Collection[Cube]') -> str:
     return str50_unrank(x)
 
 
-#typing: Natural = Annotated[int, lambda _: (0 <= _)]
-#typing: NaturalLessThan[n] = Annotated[int, lambda _: (0 <= _ < n)]
-#typing: FixedSizeSet[T, k] = Annotated[Set[T], lambda _: (len(_) == k)]
+#typing: Natural = Annotated[int, beartype.vale.Is[lambda _: (0 <= _)]]
+#typing: NaturalLessThan[Literal[N]] = Annotated[int, beartype.vale.Is[lambda _: (0 <= _ < N)]]
+#typing: FixedSizeSet[T, Literal[K]] = Annotated[Set[T], beartype.vale.Is[lambda _: (len(_) == K)]]
 
 
 def _nat_to_nbag(x: 'Natural', n: 'Natural') -> 'Collection[NaturalLessThan[n]]':
